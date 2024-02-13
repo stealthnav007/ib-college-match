@@ -6,9 +6,9 @@ LOGGER = get_logger(__name__)
 
 
 st.write("""
-# My first app
-Hello *world!*
+# IB College Match
+UNIS Acceptance Data (2021 - 2023)
 """)
  
 df = pd.read_csv("SCOIR-UNIS-College-Data.csv")
-st.table(df)
+st.dataframe(df)
