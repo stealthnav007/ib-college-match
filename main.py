@@ -14,8 +14,6 @@ st.write("""
 UNIS Acceptance Data (2021 - 2023)
 """)
 
-df = pd.read_csv("SCOIR-UNIS-College-Data.csv")
-
 # Convert the 'GPA', 'SAT' and 'ACT' columns to numeric
 df['GPA'] = pd.to_numeric(df['GPA'], errors='coerce')
 df['SAT'] = pd.to_numeric(df['SAT'], errors='coerce')
