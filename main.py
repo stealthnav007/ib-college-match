@@ -1,8 +1,13 @@
 import streamlit as st
 import pandas as pd
+from sqlalchemy import create_engine
 from streamlit.logger import get_logger
 
 LOGGER = get_logger(__name__)
+
+engine = create_engine('postgresql://ibcm:password@localhost:5432/ibcm')
+
+df=pd.read_sql_table('raw_data', engine)
 
 st.write("""
 # IB College Match
