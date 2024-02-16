@@ -1,3 +1,4 @@
+import requests
 import streamlit as st
 import pandas as pd
 from sqlalchemy import create_engine
@@ -5,9 +6,11 @@ from streamlit.logger import get_logger
 
 LOGGER = get_logger(__name__)
 
-engine = create_engine('postgresql://ibcm:password@localhost:5432/ibcm')
+# Make a GET request to the FastAPI endpoint
+response = requests.get('http://localhost:8000/get-data/')
 
-df=pd.read_sql_table('raw_data', engine)
+# Convert the response to a DataFrame
+df = pd.DataFrame(response.json())
 
 st.write("""
 # IB College Match
