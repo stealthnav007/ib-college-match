@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 import asyncpg
 import pandas as pd
@@ -8,7 +9,7 @@ app = FastAPI()
 # Database connection parameters
 DB_USER = 'ibcm'
 DB_PASSWORD = 'password'
-DB_HOST = 'localhost'
+DB_HOST = os.getenv('PG_HOST', 'localhost')
 DB_NAME = 'ibcm'
 DB_PORT = '5432'  # default PostgreSQL port is 5432
 

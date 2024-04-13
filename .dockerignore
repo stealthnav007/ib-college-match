@@ -1,0 +1,8 @@
+.devcontainer/
+.git/
+.github/
+.gitignore
+.vscode
+README.md
+SCOIR-UNIS-College-Data.csv
+__pycache__

@@ -4,10 +4,15 @@ import pandas as pd
 from sqlalchemy import create_engine
 from streamlit.logger import get_logger
 
+import os
+
+host = os.getenv('FAST_API_HOST', 'localhost')
+url = f"http://{host}:8000/get-data/"
+
 LOGGER = get_logger(__name__)
 
 # Make a GET request to the FastAPI endpoint
-response = requests.get('http://localhost:8000/get-data/')
+response = requests.get(url)
 
 # Convert the response to a DataFrame
 df = pd.DataFrame(response.json())

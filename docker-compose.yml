@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  fast-api:
+    depends_on:
+      - db
+    
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    volumes:
+      - .:/app
+
+    environment:
+      PG_HOST: db
+
+    working_dir: /app
+    command: uvicorn server:app --host 0.0.0.0 --port 8000
+
+  streamlit:
+    depends_on:
+      - fast-api
+      - db
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    volumes:
+      - .:/app
+
+    environment:
+      FAST_API_HOST: fast-api
+
+    working_dir: /app
+    command: streamlit run main.py --server.enableCORS false --server.enableXsrfProtection false
+    ports:
+      - 8501:8501
+
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ibcm
+      POSTGRES_DB: ibcm
+      POSTGRES_PASSWORD: password
+
+volumes:
+  postgres-data:
