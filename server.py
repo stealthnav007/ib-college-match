@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 import asyncpg
 import pandas as pd
-from typing import List
+from typing import List, Optional
 
 app = FastAPI()
 
@@ -32,7 +32,7 @@ async def shutdown_event():
     await app.state.db.close()
 
 # Endpoint to fetch data from PostgreSQL and return as a DataFrame
-@app.get("/get-data/")
+@app.get("/get-all-data/")
 async def get_data():
     async with app.state.db.acquire() as connection:
         # Your SQL query here
@@ -40,5 +40,32 @@ async def get_data():
         rows = await connection.fetch(query)
         # Convert to pandas DataFrame
         df = pd.DataFrame(rows, columns=[col for col in rows[0].keys()])
+        # Return the DataFrame in JSON format
+        return df.to_dict(orient="records")
+    
+# Endpoint to filter data based on GPA, SAT and ACT scores
+@app.get("/get-gpa-filtered-data/")
+async def filter_data(gpa: float, sat: Optional[str] = None, act: Optional[str] = None):
+    async with app.state.db.acquire() as connection:
+        # Start with a base query
+        query = 'SELECT * FROM raw_data WHERE "Outcome" LIKE \'Accepted%\' AND "GPA" <= $1'
+        params = [gpa]
+
+        # If SAT score is provided, add it to the query
+        if sat is not None:
+            query += ' AND "SAT" <= $2'
+            params.append(sat)
+
+        # If ACT score is provided, add it to the query
+        if act is not None:
+            query += ' AND "ACT" <= $3'
+            params.append(act)
+
+        # Execute the query
+        rows = await connection.fetch(query, *params)
+
+        # Convert to pandas DataFrame
+        df = pd.DataFrame(rows, columns=[col for col in rows[0].keys()])
+
         # Return the DataFrame in JSON format
         return df.to_dict(orient="records")

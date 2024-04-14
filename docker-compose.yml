@@ -13,7 +13,7 @@ services:
       - .:/app
 
     working_dir: /app
-    command: uvicorn server:app --host 0.0.0.0
+    command: uvicorn server:app --host 0.0.0.0 --reload
     ports:
       - 8000:8000
 
@@ -33,7 +33,7 @@ services:
       - .:/app
 
     working_dir: /app
-    command: streamlit run main.py --server.enableCORS false --server.enableXsrfProtection false
+    command: streamlit run main.py --server.enableCORS false --server.enableXsrfProtection false --server.fileWatcherType poll
     ports:
       - 8501:8501
 
