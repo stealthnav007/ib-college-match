@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   fast-api:
+    network_mode: host
     depends_on:
       - db
     
@@ -13,7 +14,7 @@ services:
       - .:/app
 
     environment:
-      PG_HOST: db
+      #PG_HOST: db
 
     working_dir: /app
     command: uvicorn server:app --host 0.0.0.0 --port 8000
@@ -21,6 +22,7 @@ services:
       - 8000:8000
 
   streamlit:
+    network_mode: host
     depends_on:
       - fast-api
       - db
@@ -33,7 +35,7 @@ services:
       - .:/app
 
     environment:
-      FAST_API_HOST: fast-api
+      #FAST_API_HOST: fast-api
 
     working_dir: /app
     command: streamlit run main.py --server.enableCORS false --server.enableXsrfProtection false
@@ -41,6 +43,7 @@ services:
       - 8501:8501
 
   db:
+    network_mode: host
     image: postgres:latest
     restart: unless-stopped
     volumes:
