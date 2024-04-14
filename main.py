@@ -3,6 +3,8 @@ import streamlit as st
 import pandas as pd
 from sqlalchemy import create_engine
 from streamlit.logger import get_logger
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 import os
 
@@ -72,3 +74,17 @@ filtered_df = filtered_df[filtered_df['Outcome'].isin(selected_outcomes)]
 
 # Display the filtered dataframe as a table
 st.dataframe(filtered_df, use_container_width=True)
+
+# Create a figure with two subplots: one for SAT vs. GPA and one for ACT vs. GPA
+fig, ax = plt.subplots(1, 2, figsize=(15, 7))
+
+# Create a scatter plot for SAT vs. GPA
+sns.scatterplot(data=filtered_df, x='SAT', y='GPA', hue='Outcome', ax=ax[0])
+ax[0].set_title('SAT vs. GPA')
+
+# Create a scatter plot for ACT vs. GPA
+sns.scatterplot(data=filtered_df, x='ACT', y='GPA', hue='Outcome', ax=ax[1])
+ax[1].set_title('ACT vs. GPA')
+
+# Display the plots
+st.pyplot(fig)

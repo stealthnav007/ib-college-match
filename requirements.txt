@@ -7,3 +7,5 @@ fastapi
 uvicorn
 asyncpg
 sqlalchemy
+matplotlib
+seaborn
