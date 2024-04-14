@@ -1,7 +1,7 @@
 {
 	"name": "Streamlit Dev Container",
 	"dockerComposeFile": "../docker-compose.yml",
-	"service": "fast-api",
+	"service": "streamlit",
 	"workspaceFolder": "/app",
 	"forwardPorts": [8000, 8501]
 }
