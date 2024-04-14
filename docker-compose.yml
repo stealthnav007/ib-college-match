@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   fast-api:
-    network_mode: host
     depends_on:
       - db
     
@@ -14,12 +13,14 @@ services:
       - .:/app
 
     working_dir: /app
-    command: uvicorn server:app --host 0.0.0.0 --port 8000
+    command: uvicorn server:app --host 0.0.0.0
     ports:
       - 8000:8000
 
+    environment:
+      PG_HOST: db
+
   streamlit:
-    network_mode: host
     depends_on:
       - fast-api
       - db
@@ -36,8 +37,10 @@ services:
     ports:
       - 8501:8501
 
+    environment:
+      FAST_API_HOST: fast-api
+
   db:
-    network_mode: host
     image: postgres:latest
     restart: unless-stopped
     volumes:
