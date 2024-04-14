@@ -13,9 +13,6 @@ services:
     volumes:
       - .:/app
 
-    environment:
-      #PG_HOST: db
-
     working_dir: /app
     command: uvicorn server:app --host 0.0.0.0 --port 8000
     ports:
@@ -33,9 +30,6 @@ services:
 
     volumes:
       - .:/app
-
-    environment:
-      #FAST_API_HOST: fast-api
 
     working_dir: /app
     command: streamlit run main.py --server.enableCORS false --server.enableXsrfProtection false
