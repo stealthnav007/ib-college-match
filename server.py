@@ -79,16 +79,10 @@ async def get_college_data(colleges: Optional[str] = None):
     # Split the colleges string into a list and strip spaces
     colleges_list = [college.strip() for college in colleges.split(',')]
 
-    print("colleges is: "+colleges)
-    print("colleges_list is: "+str(colleges_list))
-
     async with app.state.db.acquire() as connection:
         # SQL query to fetch all data for the specified colleges
         query = f'SELECT * FROM raw_data WHERE "School" IN ({", ".join(["$" + str(i+1) for i in range(len(colleges_list))])})'
         params = colleges_list
-
-        print("query is: "+query)
-        print("params is: "+str(params))
 
         # Execute the query
         rows = await connection.fetch(query, *params)
