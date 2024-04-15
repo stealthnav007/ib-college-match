@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import asyncpg
 import pandas as pd
 from typing import List, Optional
@@ -68,4 +68,48 @@ async def filter_data(gpa: float, sat: Optional[str] = None, act: Optional[str] 
         df = pd.DataFrame(rows, columns=[col for col in rows[0].keys()])
 
         # Return the DataFrame in JSON format
+        return df.to_dict(orient="records") 
+
+# Endpoint to fetch data for specific colleges
+@app.get("/get-college-data/")
+async def get_college_data(colleges: Optional[str] = None):
+    if colleges is None:
+        raise HTTPException(status_code=400, detail="No colleges provided")
+
+    # Split the colleges string into a list and strip spaces
+    colleges_list = [college.strip() for college in colleges.split(',')]
+
+    print("colleges is: "+colleges)
+    print("colleges_list is: "+str(colleges_list))
+
+    async with app.state.db.acquire() as connection:
+        # SQL query to fetch all data for the specified colleges
+        query = f'SELECT * FROM raw_data WHERE "School" IN ({", ".join(["$" + str(i+1) for i in range(len(colleges_list))])})'
+        params = colleges_list
+
+        print("query is: "+query)
+        print("params is: "+str(params))
+
+        # Execute the query
+        rows = await connection.fetch(query, *params)
+
+        # Convert to pandas DataFrame
+        df = pd.DataFrame(rows, columns=[col for col in rows[0].keys()])
+
+        # Return the DataFrame in JSON format
         return df.to_dict(orient="records")
+    
+# Endpoint to fetch a list of unique colleges
+@app.get("/get-college-list/")
+async def get_college_list():
+    async with app.state.db.acquire() as connection:
+        # SQL query to fetch all unique college names
+        query = 'SELECT DISTINCT "School" FROM raw_data'
+
+        # Execute the query
+        rows = await connection.fetch(query)
+
+        # Extract college names from the rows
+        colleges = [row['School'] for row in rows]
+
+        return colleges

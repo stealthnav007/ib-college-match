@@ -74,6 +74,10 @@ def page1():
     # Filter the DataFrame based on the selected outcomes
     filtered_df = filtered_df[filtered_df['Outcome'].isin(selected_outcomes)]
 
+    # Check if the 'index' column exists and drop it
+    if 'index' in filtered_df.columns:
+        filtered_df = filtered_df.drop(columns=['index'])
+
     # Display the filtered dataframe as a table
     st.dataframe(filtered_df, use_container_width=True)
 
@@ -94,33 +98,76 @@ def page1():
 def page2():
     st.title("College Specific Data")
 
-    # Create text input fields for GPA, SAT, and ACT
-    gpa = st.text_input("Enter GPA")
-    sat = st.text_input("Enter SAT score")
-    act = st.text_input("Enter ACT score")
+    # Make a GET request to the get-college-list endpoint
+    college_list_response = requests.get(f"http://{host}:8000/get-college-list")
+    colleges = college_list_response.json()
 
-    # Convert the input values to the appropriate data types
-    gpa = float(gpa) if gpa else None
-    sat = int(sat) if sat else None
-    act = int(act) if act else None
+    # Create a select box for the colleges
+    selected_colleges = st.multiselect('Select one or more colleges to compare', colleges)
 
-    # Only make the GET request and display the table if GPA is not None
-    if gpa is not None:
-        url = f"http://{host}:8000/get-gpa-filtered-data/"
+    # Convert the selected_colleges list to a string for the query parameter
+    selected_colleges_str = ','.join(selected_colleges)
 
-        # Make a GET request to the FastAPI endpoint with the input values as query parameters
-        response = requests.get(url, params={"gpa": gpa, "sat": sat, "act": act})
+    url = f"http://{host}:8000/get-college-data/"
+
+    if selected_colleges_str:
+        # Make a GET request to the FastAPI endpoint with the selected college as a query parameter
+        response = requests.get(url, params={"colleges": selected_colleges_str})
 
         # Convert the response to a DataFrame
         df = pd.DataFrame(response.json())
 
-        # Display the DataFrame as a table
-        st.dataframe(df, use_container_width=True)
-    else:
-        st.write("Please enter at least a GPA to see data. You can also enter SAT and ACT scores to further refine the search.")
+        for college in selected_colleges:
+            # Filter the DataFrame for the current college
+            college_df = df[df['School'] == college]
 
+            # Filter the DataFrame for accepted students
+            accepted_df = college_df[college_df['Outcome'].str.contains('Accepted')]
 
+            # Convert the 'GPA', 'SAT' and 'ACT' columns to numeric
+            accepted_df['GPA'] = pd.to_numeric(accepted_df['GPA'], errors='coerce')
+            accepted_df['SAT'] = pd.to_numeric(accepted_df['SAT'], errors='coerce')
+            accepted_df['ACT'] = pd.to_numeric(accepted_df['ACT'], errors='coerce')
 
+            # Calculate the statistics for the accepted students
+            acceptance_rate = len(accepted_df) / len(college_df)
+            avg_gpa = accepted_df['GPA'].mean()
+            avg_sat = accepted_df['SAT'].mean()
+            sat_range = accepted_df['SAT'].max() - accepted_df['SAT'].min()
+            avg_act = accepted_df['ACT'].mean()
+            act_range = accepted_df['ACT'].max() - accepted_df['ACT'].min()
+
+            # Display the statistics
+            st.write(f"School: {college}")
+            st.write(f"Acceptance Rate: {acceptance_rate * 100}%")
+            st.write(f"Average GPA: {avg_gpa}")
+            st.write(f"Average SAT: {avg_sat}")
+            st.write(f"SAT Range: {sat_range}")
+            st.write(f"Average ACT: {avg_act}")
+            st.write(f"ACT Range: {act_range}")
+
+            # Create a histogram for GPA, SAT, and ACT scores
+            fig, ax = plt.subplots(3, 1, figsize=(10, 15))
+
+            sns.histplot(data=accepted_df, x='GPA', ax=ax[0])
+            ax[0].set_title('GPA Distribution')
+
+            sns.histplot(data=accepted_df, x='SAT', ax=ax[1])
+            ax[1].set_title('SAT Distribution')
+
+            sns.histplot(data=accepted_df, x='ACT', ax=ax[2])
+            ax[2].set_title('ACT Distribution')
+
+            # Display the plots
+            st.pyplot(fig)
+
+            # Check if the 'index' column exists and drop it
+            if 'index' in accepted_df.columns:
+                accepted_df = accepted_df.drop(columns=['index'])
+            
+            # Display the DataFrame as a table
+            st.dataframe(accepted_df, use_container_width=True)
+    
 pages = {
     "IB College Match": page1,
     "College Specific Data": page2,
