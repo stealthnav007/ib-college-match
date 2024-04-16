@@ -1,26 +1,14 @@
-import requests
 import streamlit as st
 import numpy as np
 import pandas as pd
-from sqlalchemy import create_engine
 from streamlit.logger import get_logger
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import os
-
-host = os.getenv('FAST_API_HOST', 'localhost')
 
 def page1():
-    url = f"http://{host}:8000/get-all-data/"
-
-    LOGGER = get_logger(__name__)
-
-    # Make a GET request to the FastAPI endpoint
-    response = requests.get(url)
-
-    # Convert the response to a DataFrame
-    df = pd.DataFrame(response.json())
+    # Load the data from the CSV file
+    df = pd.read_csv("UNIS-College-Data.csv")
 
     st.write("""
     # IB College Match
@@ -99,9 +87,11 @@ def page1():
 def page2():
     st.title("College Specific Data")
 
-    # Make a GET request to the get-college-list endpoint
-    college_list_response = requests.get(f"http://{host}:8000/get-college-list")
-    colleges = college_list_response.json()
+    # Load the data from the CSV file
+    df = pd.read_csv("UNIS-College-Data.csv")
+
+    # Get a list of unique schools
+    colleges = list(df['School'].unique())
 
     # Create a select box for the colleges
     selected_colleges = st.multiselect('Select one or more colleges to compare', colleges)
@@ -109,19 +99,9 @@ def page2():
     # Convert the selected_colleges list to a string for the query parameter
     selected_colleges_str = ','.join(selected_colleges)
 
-    print("selected_colleges_str is: "+selected_colleges_str)
-    print("selected_colleges is: "+str(selected_colleges))
-
-    url = f"http://{host}:8000/get-college-data/"
-
     if selected_colleges_str:
-        # Make a GET request to the FastAPI endpoint with the selected college as a query parameter
-        response = requests.get(url, params={"colleges": selected_colleges_str})
 
-        # Convert the response to a DataFrame
-        df = pd.DataFrame(response.json())
-
-        # Create a DataFrame to store the data for all accepted students
+        # Create a list of DataFrames to store the data for all accepted students
         all_accepted_df_list = []
 
         # Initialize a list to store the statistics for each school
