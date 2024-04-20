@@ -120,21 +120,23 @@ def page2():
             accepted_df['ACT'] = pd.to_numeric(accepted_df['ACT'], errors='coerce')
 
             # Calculate the statistics for the accepted students
-            #acceptance_rate = round(len(accepted_df) / len(college_df)*100, 2)
-            #avg_gpa = accepted_df['GPA'].mean().round(2)
-            #avg_sat = accepted_df['SAT'].mean().round(2)
-            #sat_range = (accepted_df['SAT'].max() - accepted_df['SAT'].min()).round(2)
-            #avg_act = accepted_df['ACT'].mean().round(2)
-            #act_range = (accepted_df['ACT'].max() - accepted_df['ACT'].min()).round(2)
-
-            # Calculate the statistics for the accepted students
             acceptance_rate = round(len(accepted_df) / len(college_df)*100, 2) if not pd.isna(len(accepted_df) / len(college_df)*100) else np.nan
             avg_gpa = round(accepted_df['GPA'].mean(), 2) if not pd.isna(accepted_df['GPA'].mean()) else 0
-            avg_sat = round(accepted_df['SAT'].mean(), 2) if not pd.isna(accepted_df['SAT'].mean()) else 0
-            sat_range = round(accepted_df['SAT'].max() - accepted_df['SAT'].min(), 2) if not pd.isna(accepted_df['SAT'].max() - accepted_df['SAT'].min()) else 0
-            avg_act = round(accepted_df['ACT'].mean(), 2) if not pd.isna(accepted_df['ACT'].mean()) else 0
-            act_range = round(accepted_df['ACT'].max() - accepted_df['ACT'].min(), 2) if not pd.isna(accepted_df['ACT'].max() - accepted_df['ACT'].min()) else 0
+            avg_sat = str(int(round(accepted_df['SAT'].mean()))) if not pd.isna(accepted_df['SAT'].mean()) else '0'
+            avg_act = str(int(round(accepted_df['ACT'].mean()))) if not pd.isna(accepted_df['ACT'].mean()) else '0'
 
+            # Calculate the 25th and 75th percentiles of the 'SAT' column
+            sat_25th = int(accepted_df['SAT'].quantile(0.25)) if not pd.isna(accepted_df['SAT'].quantile(0.25)) else 'N/A'
+            sat_75th = int(accepted_df['SAT'].quantile(0.75)) if not pd.isna(accepted_df['SAT'].quantile(0.75)) else 'N/A'
+
+            # Calculate the 25th and 75th percentiles of the 'ACT' column
+            act_25th = int(accepted_df['ACT'].quantile(0.25)) if not pd.isna(accepted_df['ACT'].quantile(0.25)) else 'N/A'
+            act_75th = int(accepted_df['ACT'].quantile(0.75)) if not pd.isna(accepted_df['ACT'].quantile(0.75)) else 'N/A'
+
+            # Format the SAT and ACT percentiles as a string
+            sat_range = '{} - {}'.format(sat_25th, sat_75th) if sat_25th != 'N/A' and sat_75th != 'N/A' else 'N/A'
+            act_range = '{} - {}'.format(act_25th, act_75th) if act_25th != 'N/A' and act_75th != 'N/A' else 'N/A'
+            
             # Append the accepted_df DataFrame to the all_accepted_df DataFrame
             all_accepted_df_list.append(accepted_df)
 
@@ -145,7 +147,11 @@ def page2():
         all_accepted_df = pd.concat(all_accepted_df_list)
 
         # Create a DataFrame from the list
-        stats_df = pd.DataFrame(stats_list, columns=['School', 'Acceptance Rate', 'Average GPA', 'Average SAT', 'SAT Range', 'Average ACT', 'ACT Range'])
+        stats_df = pd.DataFrame(stats_list, columns=['School', 'Acceptance Rate (%)', 'Average GPA', 'Average SAT', 'SAT Range (25th - 75th)', 'Average ACT', 'ACT Range (25th - 75th)'])
+
+        # Convert float columns to strings and format them manually
+        for col in stats_df.select_dtypes(include=[np.number]).columns:
+            stats_df[col] = stats_df[col].apply(lambda x: '{:.2f}'.format(x))
 
         # Display the DataFrame as a table
         st.table(stats_df)
