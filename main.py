@@ -120,7 +120,7 @@ def page2():
             accepted_df['ACT'] = pd.to_numeric(accepted_df['ACT'], errors='coerce')
 
             # Calculate the statistics for the accepted students
-            acceptance_rate = round(len(accepted_df) / len(college_df)*100, 2) if not pd.isna(len(accepted_df) / len(college_df)*100) else np.nan
+            acceptance_rate = str(round(len(accepted_df) / len(college_df)*100)) if not pd.isna(len(accepted_df) / len(college_df)*100) else 'N/A'
             avg_gpa = round(accepted_df['GPA'].mean(), 2) if not pd.isna(accepted_df['GPA'].mean()) else 0
             avg_sat = str(int(round(accepted_df['SAT'].mean()))) if not pd.isna(accepted_df['SAT'].mean()) else '0'
             avg_act = str(int(round(accepted_df['ACT'].mean()))) if not pd.isna(accepted_df['ACT'].mean()) else '0'
