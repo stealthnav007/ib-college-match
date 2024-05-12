@@ -197,3 +197,6 @@ def page2():
         
         # Display the DataFrame as a table
         st.dataframe(all_accepted_df, use_container_width=True)
+
+def page3():
+    pass
