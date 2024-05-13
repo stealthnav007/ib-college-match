@@ -107,3 +107,4 @@ async def get_college_list():
         colleges = [row['School'] for row in rows]
 
         return colleges
+
