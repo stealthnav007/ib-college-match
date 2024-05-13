@@ -33,7 +33,7 @@ services:
       - .:/app
 
     working_dir: /app
-    command: streamlit run main.py --server.enableCORS false --server.enableXsrfProtection false --server.fileWatcherType poll
+    command: streamlit run Welcome.py --server.enableCORS false --server.enableXsrfProtection false --server.fileWatcherType poll
     ports:
       - 8501:8501
 
