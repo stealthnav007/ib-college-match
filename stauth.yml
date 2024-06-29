@@ -1,0 +1,22 @@
+credentials:
+  usernames:
+    vmathew:
+      email: stealthveeman5@gmail.com
+      failed_login_attempts: 0 # Will be managed automatically
+      logged_in: False # Will be managed automatically
+      name: Vinod Mathew
+      password: Wiiuswitch88 # Will be hashed automatically
+    nmathew:
+      email: stealthnav007@gmail.com
+      failed_login_attempts: 0 # Will be managed automatically
+      logged_in: False # Will be managed automatically
+      name: Naveen Mathew
+      password: Wiiuswitch88 # Will be hashed automatically
+cookie:
+  expiry_days: 0
+  key: i-love-college # Must be string
+  name: ib-college-match
+pre-authorized:
+  emails:
+  - stealthkir009@gmail.com
+  - gladysmathew@yahoo.com

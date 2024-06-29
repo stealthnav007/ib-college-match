@@ -9,3 +9,4 @@ asyncpg
 sqlalchemy
 matplotlib
 seaborn
+streamlit-authenticator
