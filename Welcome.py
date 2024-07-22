@@ -26,7 +26,7 @@ if st.session_state["authentication_status"]:
     st.write(f'Welcome *{st.session_state["name"]}* to SPARC - Student Profile and Admissions Research Companion')
     st.markdown(
     """
-    Need to describe the app!
+    Need to describe the app Vino!
     """
     )   
 elif st.session_state["authentication_status"] is False:
