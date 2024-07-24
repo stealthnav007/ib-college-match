@@ -48,7 +48,8 @@ if selected_colleges_str:
         # Filter the DataFrame for accepted students
         accepted_df = college_df[college_df['Outcome'].str.contains('Accepted')]
 
-        # Convert the 'GPA', 'SAT' and 'ACT' columns to numeric
+        # Convert the 'Year, 'GPA', 'SAT' and 'ACT' columns to numeric
+        accepted_df['Year'] = pd.to_numeric(df['Year'], errors='coerce')
         accepted_df['GPA'] = pd.to_numeric(accepted_df['GPA'], errors='coerce')
         accepted_df['SAT'] = pd.to_numeric(accepted_df['SAT'], errors='coerce')
         accepted_df['ACT'] = pd.to_numeric(accepted_df['ACT'], errors='coerce')
@@ -110,4 +111,10 @@ if selected_colleges_str:
         all_accepted_df = all_accepted_df.drop(columns=['index'])
     
     # Display the DataFrame as a table
-    st.dataframe(all_accepted_df, use_container_width=True)
+    styled_df = all_accepted_df.style.format({
+    'Year' : "{:d}",  # Ensures Year is displayed as an integer without commas
+    'GPA': "{:.2f}",  # Formats GPA with 2 decimal places
+    'SAT': "{:.0f}",  # Ensures SAT is displayed as an integer without commas
+    'ACT': "{:.0f}",  # Ensures ACT is displayed as an integer without commas
+    })
+    st.dataframe(styled_df, use_container_width=True)

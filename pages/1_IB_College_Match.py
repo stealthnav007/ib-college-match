@@ -27,6 +27,7 @@ UNIS Acceptance Data (2021 - 2023)
 """)
 
 # Convert the 'GPA', 'SAT' and 'ACT' columns to numeric
+df['Year'] = pd.to_numeric(df['Year'], errors='coerce')
 df['GPA'] = pd.to_numeric(df['GPA'], errors='coerce')
 df['SAT'] = pd.to_numeric(df['SAT'], errors='coerce')
 df['ACT'] = pd.to_numeric(df['ACT'], errors='coerce')
@@ -78,8 +79,14 @@ filtered_df = filtered_df[filtered_df['Outcome'].isin(selected_outcomes)]
 if 'index' in filtered_df.columns:
     filtered_df = filtered_df.drop(columns=['index'])
 
-# Display the filtered dataframe as a table
-st.dataframe(filtered_df, use_container_width=True)
+# Display the filtered dataframe as a table with the fields properly formatted
+styled_df = filtered_df.style.format({
+    'Year' : "{:d}",  # Ensures Year is displayed as an integer without commas
+    'GPA': "{:.2f}",  # Formats GPA with 2 decimal places
+    'SAT': "{:.0f}",  # Ensures SAT is displayed as an integer without commas
+    'ACT': "{:.0f}",  # Ensures ACT is displayed as an integer without commas
+})
+st.dataframe(styled_df, use_container_width=True)
 
 # Create a figure with two subplots: one for SAT vs. GPA and one for ACT vs. GPA
 fig, ax = plt.subplots(1, 2, figsize=(15, 7))
