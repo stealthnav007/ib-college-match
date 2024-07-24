@@ -26,7 +26,7 @@ st.write("""
 UNIS Acceptance Data (2021 - 2023)
 """)
 
-# Convert the 'GPA', 'SAT' and 'ACT' columns to numeric
+# Convert the 'Year', 'GPA', 'SAT' and 'ACT' columns to numeric
 df['Year'] = pd.to_numeric(df['Year'], errors='coerce')
 df['GPA'] = pd.to_numeric(df['GPA'], errors='coerce')
 df['SAT'] = pd.to_numeric(df['SAT'], errors='coerce')
