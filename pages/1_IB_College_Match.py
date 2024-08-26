@@ -41,9 +41,6 @@ universities = df['School'].unique()
 # Get unique values for the 'Outcome' column
 outcomes = df['Outcome'].unique()
 
-# Create two columns
-col1, col2 = st.columns(2)
-
 # Create a selectbox for the 'School' column
 selected_university = st.selectbox('Select a university', universities, 
                                    index=universities.tolist().index(get_preference('selected_college')) if get_preference('selected_college') in universities else 0, 
@@ -55,6 +52,9 @@ selected_outcomes = st.multiselect('Select outcomes', outcomes,
                                    default=get_preference('selected_outcomes'), 
                                    key='selected_outcomes',
                                    on_change=lambda: set_preference('selected_outcomes', st.session_state.selected_outcomes))
+
+# Create two columns
+col1, col2 = st.columns(2)
 
 # Create checkboxes for GPA, SAT and ACT scores
 compare_gpa = col1.checkbox('Filter by GPA', value=get_preference('compare_gpa'), key='compare_gpa',
