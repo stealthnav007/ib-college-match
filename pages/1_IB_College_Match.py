@@ -6,8 +6,12 @@ from sqlalchemy import create_engine
 from streamlit.logger import get_logger
 import matplotlib.pyplot as plt
 import seaborn as sns
-
 import os
+from session_state import init_session_state
+from local_storage import save_to_local_storage
+
+# Initialize session state
+init_session_state()
 
 host = os.getenv('FAST_API_HOST', 'localhost')
 
@@ -37,28 +41,28 @@ universities = list(df['School'].unique())
 universities.insert(0, 'All')
 
 # Create a selectbox for the 'School' column
-selected_university = st.selectbox('Select a university', universities)
+selected_university = st.selectbox('Select a university', universities, key='selected_college', on_change=lambda: save_to_local_storage('selected_college', st.session_state.selected_college))
 
 # Get the unique values in the 'Outcome' column
 outcomes = list(df['Outcome'].unique())
 
 # Create a multi-select list for the 'Outcome' column
-selected_outcomes = st.multiselect('Select outcomes', outcomes)
+selected_outcomes = st.multiselect('Select outcomes', outcomes, key='selected_outcomes', on_change=lambda: save_to_local_storage('selected_outcomes', st.session_state.selected_outcomes))
 
 # Create columns for checkboxes and sliders
 col1, col2 = st.columns(2)
 
 # Create checkboxes for GPA, SAT and ACT scores
-compare_gpa = col1.checkbox('Filter by GPA')
+compare_gpa = col1.checkbox('Filter by GPA', key='compare_gpa', on_change=lambda: save_to_local_storage('compare_gpa', st.session_state.compare_gpa))
 col1.markdown("---")  # Add empty space
-compare_sat = col1.checkbox('Filter by SAT score')
+compare_sat = col1.checkbox('Filter by SAT score', key='compare_sat', on_change=lambda: save_to_local_storage('compare_sat', st.session_state.compare_sat))
 col1.markdown("---")  # Add empty space
-compare_act = col1.checkbox('Filter by ACT score')
+compare_act = col1.checkbox('Filter by ACT score', key='compare_act', on_change=lambda: save_to_local_storage('compare_act', st.session_state.compare_act))
 
 # Create sliders for GPA, SAT and ACT scores
-max_gpa = col2.slider('Maximum GPA', min_value=0.0, max_value=7.0, step=0.01, key='gpa')
-max_sat = col2.slider('Maximum SAT score', min_value=400, max_value=1600, step=10, key='sat')
-max_act = col2.slider('Maximum ACT score', min_value=1, max_value=36, step=1, key='act')
+max_gpa = col2.slider('Maximum GPA', min_value=0.0, max_value=7.0, step=0.01, key='max_gpa', on_change=lambda: save_to_local_storage('max_gpa', st.session_state.max_gpa))
+max_sat = col2.slider('Maximum SAT score', min_value=400, max_value=1600, step=10, key='max_sat', on_change=lambda: save_to_local_storage('max_sat', st.session_state.max_sat))
+max_act = col2.slider('Maximum ACT score', min_value=1, max_value=36, step=1, key='max_act', on_change=lambda: save_to_local_storage('max_act', st.session_state.max_act))
 
 # Apply the filters only if the corresponding checkbox is checked
 if selected_university == 'All':

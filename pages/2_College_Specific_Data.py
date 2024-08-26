@@ -6,10 +6,12 @@ from sqlalchemy import create_engine
 from streamlit.logger import get_logger
 import matplotlib.pyplot as plt
 import seaborn as sns
-
 import os
+from session_state import init_session_state
+from local_storage import save_to_local_storage
 
-host = os.getenv('FAST_API_HOST', 'localhost')
+# Initialize session state
+init_session_state()
 
 st.title("College Specific Data")
 
@@ -18,7 +20,7 @@ college_list_response = requests.get(f"http://{host}:8000/get-college-list")
 colleges = college_list_response.json()
 
 # Create a select box for the colleges
-selected_colleges = st.multiselect('Select one or more colleges to compare', colleges)
+selected_colleges = st.multiselect('Select one or more colleges to compare', colleges, key='selected_colleges', on_change=lambda: save_to_local_storage('selected_colleges', st.session_state.selected_colleges))
 
 # Convert the selected_colleges list to a string for the query parameter
 selected_colleges_str = ','.join(selected_colleges)

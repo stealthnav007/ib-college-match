@@ -2,6 +2,10 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
+from session_state import init_session_state
+
+# Initialize session state
+init_session_state()
 
 # Store the page title in a variable
 page_title = "Student Profile and Admissions Research Companion (SPARC)"
