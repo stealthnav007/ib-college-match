@@ -7,8 +7,7 @@ from streamlit.logger import get_logger
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
-from session_state import init_session_state
-from local_storage import save_to_local_storage
+from session_state import init_session_state, get_preference, set_preference
 
 # Initialize session state
 init_session_state()
@@ -16,11 +15,15 @@ init_session_state()
 st.title("Data Maintenance")
 
 # Make a GET request to the get-college-list endpoint
+host = os.getenv('FAST_API_HOST', 'localhost')
 college_list_response = requests.get(f"http://{host}:8000/get-college-list")
 colleges = college_list_response.json()
 
 # Create a select box for the colleges
-selected_college = st.selectbox('Select a college to edit', colleges, key='selected_college_maintenance', on_change=lambda: save_to_local_storage('selected_college_maintenance', st.session_state.selected_college_maintenance))
+selected_college = st.selectbox('Select a college to edit', colleges, 
+                                index=colleges.index(get_preference('selected_college_maintenance')) if get_preference('selected_college_maintenance') in colleges else 0, 
+                                key='selected_college_maintenance',
+                                on_change=lambda: set_preference('selected_college_maintenance', st.session_state.selected_college_maintenance))
 
 url = f"http://{host}:8000/get-college-data/"
 
@@ -37,6 +40,11 @@ if selected_college:
     # Add a button to save changes
     if st.button('Save Changes'):
         # Here you would add code to save the edited DataFrame back to your database
+        # For example:
+        # save_to_database(edited_df)
         st.success('Changes saved successfully!')
 
-    print("edited_df is: "+str(edited_df))
+# You might want to add more functionality here, such as:
+# - Adding new colleges
+# - Deleting colleges
+# - Bulk data import/export options

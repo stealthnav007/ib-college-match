@@ -7,8 +7,7 @@ from streamlit.logger import get_logger
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
-from session_state import init_session_state
-from local_storage import save_to_local_storage
+from session_state import init_session_state, get_preference, set_preference
 
 # Initialize session state
 init_session_state()
@@ -36,39 +35,50 @@ df['GPA'] = pd.to_numeric(df['GPA'], errors='coerce')
 df['SAT'] = pd.to_numeric(df['SAT'], errors='coerce')
 df['ACT'] = pd.to_numeric(df['ACT'], errors='coerce')
 
-# Add 'All' to the list of universities
-universities = list(df['School'].unique())
-universities.insert(0, 'All')
+# Get unique values for the 'School' column
+universities = df['School'].unique()
 
-# Create a selectbox for the 'School' column
-selected_university = st.selectbox('Select a university', universities, key='selected_college', on_change=lambda: save_to_local_storage('selected_college', st.session_state.selected_college))
+# Get unique values for the 'Outcome' column
+outcomes = df['Outcome'].unique()
 
-# Get the unique values in the 'Outcome' column
-outcomes = list(df['Outcome'].unique())
-
-# Create a multi-select list for the 'Outcome' column
-selected_outcomes = st.multiselect('Select outcomes', outcomes, key='selected_outcomes', on_change=lambda: save_to_local_storage('selected_outcomes', st.session_state.selected_outcomes))
-
-# Create columns for checkboxes and sliders
+# Create two columns
 col1, col2 = st.columns(2)
 
+# Create a selectbox for the 'School' column
+selected_university = st.selectbox('Select a university', universities, 
+                                   index=universities.tolist().index(get_preference('selected_college')) if get_preference('selected_college') in universities else 0, 
+                                   key='selected_college',
+                                   on_change=lambda: set_preference('selected_college', st.session_state.selected_college))
+
+# Create a multi-select list for the 'Outcome' column
+selected_outcomes = st.multiselect('Select outcomes', outcomes, 
+                                   default=get_preference('selected_outcomes'), 
+                                   key='selected_outcomes',
+                                   on_change=lambda: set_preference('selected_outcomes', st.session_state.selected_outcomes))
+
 # Create checkboxes for GPA, SAT and ACT scores
-compare_gpa = col1.checkbox('Filter by GPA', key='compare_gpa', on_change=lambda: save_to_local_storage('compare_gpa', st.session_state.compare_gpa))
-col1.markdown("---")  # Add empty space
-compare_sat = col1.checkbox('Filter by SAT score', key='compare_sat', on_change=lambda: save_to_local_storage('compare_sat', st.session_state.compare_sat))
-col1.markdown("---")  # Add empty space
-compare_act = col1.checkbox('Filter by ACT score', key='compare_act', on_change=lambda: save_to_local_storage('compare_act', st.session_state.compare_act))
+compare_gpa = col1.checkbox('Filter by GPA', value=get_preference('compare_gpa'), key='compare_gpa',
+                            on_change=lambda: set_preference('compare_gpa', st.session_state.compare_gpa))
+compare_sat = col1.checkbox('Filter by SAT score', value=get_preference('compare_sat'), key='compare_sat',
+                            on_change=lambda: set_preference('compare_sat', st.session_state.compare_sat))
+compare_act = col1.checkbox('Filter by ACT score', value=get_preference('compare_act'), key='compare_act',
+                            on_change=lambda: set_preference('compare_act', st.session_state.compare_act))
 
 # Create sliders for GPA, SAT and ACT scores
-max_gpa = col2.slider('Maximum GPA', min_value=0.0, max_value=7.0, step=0.01, key='max_gpa', on_change=lambda: save_to_local_storage('max_gpa', st.session_state.max_gpa))
-max_sat = col2.slider('Maximum SAT score', min_value=400, max_value=1600, step=10, key='max_sat', on_change=lambda: save_to_local_storage('max_sat', st.session_state.max_sat))
-max_act = col2.slider('Maximum ACT score', min_value=1, max_value=36, step=1, key='max_act', on_change=lambda: save_to_local_storage('max_act', st.session_state.max_act))
+max_gpa = col2.slider('Maximum GPA', min_value=0.0, max_value=7.0, value=get_preference('max_gpa'), step=0.01, key='max_gpa',
+                      on_change=lambda: set_preference('max_gpa', st.session_state.max_gpa))
+max_sat = col2.slider('Maximum SAT score', min_value=400, max_value=1600, value=get_preference('max_sat'), step=10, key='max_sat',
+                      on_change=lambda: set_preference('max_sat', st.session_state.max_sat))
+max_act = col2.slider('Maximum ACT score', min_value=1, max_value=36, value=get_preference('max_act'), step=1, key='max_act',
+                      on_change=lambda: set_preference('max_act', st.session_state.max_act))
 
-# Apply the filters only if the corresponding checkbox is checked
-if selected_university == 'All':
-    filtered_df = df
-else:
+# Filter the DataFrame based on the selected university
+if selected_university != 'All':
     filtered_df = df[df['School'] == selected_university]
+else:
+    filtered_df = df
+
+# Filter the DataFrame based on the selected GPA, SAT and ACT scores
 if compare_gpa:
     filtered_df = filtered_df[filtered_df['GPA'] <= max_gpa]
 if compare_sat:

@@ -4,17 +4,17 @@ import yaml
 from yaml.loader import SafeLoader
 from session_state import init_session_state
 
+# Use the variable for setting the page configuration
+st.set_page_config(
+    page_title="Student Profile and Admissions Research Companion (SPARC)",
+    page_icon="favicon.ico",
+)
+
 # Initialize session state
 init_session_state()
 
 # Store the page title in a variable
 page_title = "Student Profile and Admissions Research Companion (SPARC)"
-
-# Use the variable for setting the page configuration
-st.set_page_config(
-    page_title=page_title,
-    page_icon="favicon.ico",
-)
 
 # Use the same variable to display the title as a heading
 st.markdown(f"# {page_title}")
