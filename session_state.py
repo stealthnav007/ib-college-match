@@ -2,20 +2,20 @@ import streamlit as st
 
 def init_session_state():
     if 'user_preferences' not in st.session_state:
-        st.session_state.user_preferences = {
-            'selected_college': 'All',
-            'selected_colleges': [],
-            'compare_gpa': False,
-            'compare_sat': False,
-            'compare_act': False,
-            'max_gpa': 7.0,
-            'max_sat': 1600,
-            'max_act': 36,
-            'selected_outcomes': []
-        }
+        st.session_state.user_preferences = {}
+    
+    # Ensure the current user has a preferences dictionary
+    username = st.session_state.get("username", "default_user")
+    if username not in st.session_state.user_preferences:
+        st.session_state.user_preferences[username] = {}
 
 def get_preference(key, default=None):
-    return st.session_state.user_preferences.get(key, default)
+    username = st.session_state.get("username", "default_user")
+    user_prefs = st.session_state.user_preferences.get(username, {})
+    return user_prefs.get(key, default)
 
 def set_preference(key, value):
-    st.session_state.user_preferences[key] = value
+    username = st.session_state.get("username", "default_user")
+    if username not in st.session_state.user_preferences:
+        st.session_state.user_preferences[username] = {}
+    st.session_state.user_preferences[username][key] = value

@@ -2,16 +2,14 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
-from session_state import init_session_state
+from session_state import init_session_state, get_preference, set_preference
+from local_storage import save_to_local_storage, init_local_storage
 
 # Use the variable for setting the page configuration
 st.set_page_config(
     page_title="Student Profile and Admissions Research Companion (SPARC)",
     page_icon="favicon.ico",
 )
-
-# Initialize session state
-init_session_state()
 
 # Store the page title in a variable
 page_title = "Student Profile and Admissions Research Companion (SPARC)"
@@ -37,6 +35,15 @@ authenticator = stauth.Authenticate(
 authenticator.login()
 
 if st.session_state["authentication_status"]:
+    username = st.session_state["username"]
+    save_to_local_storage('username', username)
+    
+    # Initialize session state
+    init_session_state()
+    
+    # Initialize local storage
+    init_local_storage()
+    
     pg = st.navigation([main_page, college_page, data_maintenance])
     with st.container():
         st.markdown(f'<p style="font-size:20px;"><b>Welcome {st.session_state["name"]} </b></p>', unsafe_allow_html=True)

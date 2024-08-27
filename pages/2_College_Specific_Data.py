@@ -17,7 +17,7 @@ st.title("College Specific Data")
 # Make a GET request to the get-college-list endpoint
 host = os.getenv('FAST_API_HOST', 'localhost')
 college_list_response = requests.get(f"http://{host}:8000/get-college-list")
-colleges = college_list_response.json()
+colleges = sorted(college_list_response.json())
 
 # Create a select box for the colleges
 selected_colleges = st.multiselect('Select one or more colleges to compare', colleges, 
@@ -96,30 +96,34 @@ if selected_colleges_str:
     # Create a boxplot for GPA, SAT, and ACT scores
     fig, ax = plt.subplots(3, 1, figsize=(10, 15))
 
-    sns.boxplot(data=all_accepted_df, x='GPA', y='School', ax=ax[0], palette=palette)
-    ax[0].set_title('GPA Distribution')
+    # Check if all_accepted_df is empty
+    if all_accepted_df.empty:
+        st.warning("No accepted student data available for the selected colleges.")
+    else:
+        sns.boxplot(data=all_accepted_df, x='GPA', y='School', ax=ax[0], palette=palette)
+        ax[0].set_title('GPA Distribution')
 
-    sns.boxplot(data=all_accepted_df, x='SAT', y='School', ax=ax[1], palette=palette)
-    ax[1].set_title('SAT Distribution')
+        try:
+            sns.boxplot(data=all_accepted_df, x='SAT', y='School', ax=ax[1], palette=palette)
+            ax[1].set_title('SAT Distribution')
 
-    try:
-        sns.boxplot(data=all_accepted_df, x='ACT', y='School', ax=ax[2], palette=palette)
-        ax[2].set_title('ACT Distribution')
-    except:
-        st.write("You chose a college that does not have ACT data")
-
-    # Display the plots
-    st.pyplot(fig)
-
-    # Check if the 'index' column exists and drop it
-    if 'index' in all_accepted_df.columns:
-        all_accepted_df = all_accepted_df.drop(columns=['index'])
+            sns.boxplot(data=all_accepted_df, x='ACT', y='School', ax=ax[2], palette=palette)
+            ax[2].set_title('ACT Distribution')
+        except:
+            st.write("You chose a college that does not have ACT or SATdata")    
     
-    # Display the DataFrame as a table
-    styled_df = all_accepted_df.style.format({
-    'Year' : "{:d}",  # Ensures Year is displayed as an integer without commas
-    'GPA': "{:.2f}",  # Formats GPA with 2 decimal places
-    'SAT': "{:.0f}",  # Ensures SAT is displayed as an integer without commas
-    'ACT': "{:.0f}",  # Ensures ACT is displayed as an integer without commas
-    })
-    st.dataframe(styled_df, use_container_width=True)
+        # Display the plots
+        st.pyplot(fig)
+
+        # Check if the 'index' column exists and drop it
+        if 'index' in all_accepted_df.columns:
+            all_accepted_df = all_accepted_df.drop(columns=['index'])
+    
+        # Display the DataFrame as a table
+        styled_df = all_accepted_df.style.format({
+            'Year' : "{:d}",  # Ensures Year is displayed as an integer without commas
+            'GPA': "{:.2f}",  # Formats GPA with 2 decimal places
+            'SAT': "{:.0f}",  # Ensures SAT is displayed as an integer without commas
+            'ACT': "{:.0f}",  # Ensures ACT is displayed as an integer without commas
+        })
+        st.dataframe(styled_df, use_container_width=True)

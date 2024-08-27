@@ -36,14 +36,16 @@ df['SAT'] = pd.to_numeric(df['SAT'], errors='coerce')
 df['ACT'] = pd.to_numeric(df['ACT'], errors='coerce')
 
 # Get unique values for the 'School' column
-universities = df['School'].unique()
+universities = sorted(df['School'].unique().tolist())
+# Add 'All' to the beginning of the list
+universities.insert(0, 'All')
 
 # Get unique values for the 'Outcome' column
-outcomes = df['Outcome'].unique()
+outcomes = sorted(df['Outcome'].unique().tolist())
 
 # Create a selectbox for the 'School' column
 selected_university = st.selectbox('Select a university', universities, 
-                                   index=universities.tolist().index(get_preference('selected_college')) if get_preference('selected_college') in universities else 0, 
+                                   index=universities.index(get_preference('selected_college', 'All')) if get_preference('selected_college', 'All') in universities else '0', 
                                    key='selected_college',
                                    on_change=lambda: set_preference('selected_college', st.session_state.selected_college))
 

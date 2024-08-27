@@ -11,14 +11,16 @@ def init_local_storage():
     html("""
     <script>
     function loadFromLocalStorage(key) {
-        const value = localStorage.getItem(key);
+        const username = localStorage.getItem('username') || 'default_user';
+        const value = localStorage.getItem(username + '_' + key);
         if (value) {
             Streamlit.setComponentValue(key, JSON.parse(value));
         }
     }
 
     function saveToLocalStorage(key, value) {
-        localStorage.setItem(key, JSON.stringify(value));
+        const username = localStorage.getItem('username') || 'default_user';
+        localStorage.setItem(username + '_' + key, JSON.stringify(value));
     }
 
     // Load initial values
