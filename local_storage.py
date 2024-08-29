@@ -29,8 +29,11 @@ def init_local_storage():
     loadFromLocalStorage('compare_gpa');
     loadFromLocalStorage('compare_sat');
     loadFromLocalStorage('compare_act');
+    loadFromLocalStorage('min_gpa');
     loadFromLocalStorage('max_gpa');
+    loadFromLocalStorage('min_sat');
     loadFromLocalStorage('max_sat');
+    loadFromLocalStorage('min_act');
     loadFromLocalStorage('max_act');
     loadFromLocalStorage('selected_outcomes');
 
@@ -51,11 +54,20 @@ def init_local_storage():
     Streamlit.addEventListener('compare_act', function(event) {
         saveToLocalStorage('compare_act', event.detail.value);
     });
+    Streamlit.addEventListener('min_gpa', function(event) {
+        saveToLocalStorage('min_gpa', event.detail.value);
+    });
     Streamlit.addEventListener('max_gpa', function(event) {
         saveToLocalStorage('max_gpa', event.detail.value);
     });
+    Streamlit.addEventListener('min_sat', function(event) {
+        saveToLocalStorage('min_sat', event.detail.value);
+    });
     Streamlit.addEventListener('max_sat', function(event) {
         saveToLocalStorage('max_sat', event.detail.value);
+    });
+    Streamlit.addEventListener('min_act', function(event) {
+        saveToLocalStorage('min_act', event.detail.value);
     });
     Streamlit.addEventListener('max_act', function(event) {
         saveToLocalStorage('max_act', event.detail.value);

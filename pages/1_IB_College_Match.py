@@ -66,13 +66,13 @@ compare_sat = col1.checkbox('Filter by SAT score', value=get_preference('compare
 compare_act = col1.checkbox('Filter by ACT score', value=get_preference('compare_act'), key='compare_act',
                             on_change=lambda: set_preference('compare_act', st.session_state.compare_act))
 
-# Create sliders for GPA, SAT and ACT scores
-max_gpa = col2.slider('Maximum GPA', min_value=0.0, max_value=7.0, value=get_preference('max_gpa'), step=0.01, key='max_gpa',
-                      on_change=lambda: set_preference('max_gpa', st.session_state.max_gpa))
-max_sat = col2.slider('Maximum SAT score', min_value=400, max_value=1600, value=get_preference('max_sat'), step=10, key='max_sat',
-                      on_change=lambda: set_preference('max_sat', st.session_state.max_sat))
-max_act = col2.slider('Maximum ACT score', min_value=1, max_value=36, value=get_preference('max_act'), step=1, key='max_act',
-                      on_change=lambda: set_preference('max_act', st.session_state.max_act))
+# Create sliders for minimum and maximum GPA, SAT and ACT scores
+min_gpa, max_gpa = col2.slider('GPA Range', min_value=0.0, max_value=7.0, value=(get_preference('min_gpa', 0.0), get_preference('max_gpa', 7.0)), step=0.01, key='gpa_range',
+                      on_change=lambda: (set_preference('min_gpa', st.session_state.gpa_range[0]), set_preference('max_gpa', st.session_state.gpa_range[1])))
+min_sat, max_sat = col2.slider('SAT Score Range', min_value=400, max_value=1600, value=(get_preference('min_sat', 400), get_preference('max_sat', 1600)), step=10, key='sat_range',
+                      on_change=lambda: (set_preference('min_sat', st.session_state.sat_range[0]), set_preference('max_sat', st.session_state.sat_range[1])))
+min_act, max_act = col2.slider('ACT Score Range', min_value=1, max_value=36, value=(get_preference('min_act', 1), get_preference('max_act', 36)), step=1, key='act_range',
+                      on_change=lambda: (set_preference('min_act', st.session_state.act_range[0]), set_preference('max_act', st.session_state.act_range[1])))
 
 # Filter the DataFrame based on the selected university
 if selected_university != 'All':
@@ -82,11 +82,11 @@ else:
 
 # Filter the DataFrame based on the selected GPA, SAT and ACT scores
 if compare_gpa:
-    filtered_df = filtered_df[filtered_df['GPA'] <= max_gpa]
+    filtered_df = filtered_df[(filtered_df['GPA'] >= min_gpa) & (filtered_df['GPA'] <= max_gpa)]
 if compare_sat:
-    filtered_df = filtered_df[filtered_df['SAT'] <= max_sat]
+    filtered_df = filtered_df[(filtered_df['SAT'] >= min_sat) & (filtered_df['SAT'] <= max_sat)]
 if compare_act:
-    filtered_df = filtered_df[filtered_df['ACT'] <= max_act]
+    filtered_df = filtered_df[(filtered_df['ACT'] >= min_act) & (filtered_df['ACT'] <= max_act)]
 
 # Filter the DataFrame based on the selected outcomes
 filtered_df = filtered_df[filtered_df['Outcome'].isin(selected_outcomes)]
