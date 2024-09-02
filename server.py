@@ -13,8 +13,13 @@ DB_HOST = os.getenv('PG_HOST', 'localhost')
 DB_NAME = 'ibcm'
 DB_PORT = '5432'  # default PostgreSQL port is 5432
 
-# Create a database connection pool
 async def get_db_pool():
+    """
+    Create and return a database connection pool.
+
+    Returns:
+        asyncpg.Pool: A connection pool for the PostgreSQL database.
+    """
     return await asyncpg.create_pool(
         user=DB_USER,
         password=DB_PASSWORD,
@@ -25,15 +30,23 @@ async def get_db_pool():
 
 @app.on_event("startup")
 async def startup_event():
+    """Initialize the database connection pool on application startup."""
     app.state.db = await get_db_pool()
 
 @app.on_event("shutdown")
 async def shutdown_event():
+    """Close the database connection pool on application shutdown."""
     await app.state.db.close()
 
 # Endpoint to fetch data from PostgreSQL and return as a DataFrame
 @app.get("/get-all-data/")
 async def get_data():
+    """
+    Fetch all data from the raw_data table.
+
+    Returns:
+        List[dict]: All rows from the raw_data table as a list of dictionaries.
+    """
     async with app.state.db.acquire() as connection:
         # Your SQL query here
         query = "SELECT * FROM raw_data;"
@@ -46,6 +59,17 @@ async def get_data():
 # Endpoint to filter data based on GPA, SAT and ACT scores
 @app.get("/get-gpa-filtered-data/")
 async def filter_data(gpa: float, sat: Optional[str] = None, act: Optional[str] = None):
+    """
+    Filter data based on GPA, SAT, and ACT scores.
+
+    Args:
+        gpa (float): Maximum GPA to filter by.
+        sat (Optional[str]): Maximum SAT score to filter by.
+        act (Optional[str]): Maximum ACT score to filter by.
+
+    Returns:
+        List[dict]: Filtered rows from the raw_data table as a list of dictionaries.
+    """
     async with app.state.db.acquire() as connection:
         # Start with a base query
         query = 'SELECT * FROM raw_data WHERE "Outcome" LIKE \'Accepted%\' AND "GPA" <= $1'
@@ -73,6 +97,18 @@ async def filter_data(gpa: float, sat: Optional[str] = None, act: Optional[str] 
 # Endpoint to fetch data for specific colleges
 @app.get("/get-college-data/")
 async def get_college_data(colleges: Optional[str] = None):
+    """
+    Fetch data for specific colleges.
+
+    Args:
+        colleges (Optional[str]): Comma-separated list of college names.
+
+    Returns:
+        List[dict]: Rows from the raw_data table for the specified colleges as a list of dictionaries.
+
+    Raises:
+        HTTPException: If no colleges are provided.
+    """
     if colleges is None:
         raise HTTPException(status_code=400, detail="No colleges provided")
 
@@ -96,6 +132,12 @@ async def get_college_data(colleges: Optional[str] = None):
 # Endpoint to fetch a list of unique colleges
 @app.get("/get-college-list/")
 async def get_college_list():
+    """
+    Fetch a list of unique college names.
+
+    Returns:
+        List[str]: A list of unique college names from the raw_data table.
+    """
     async with app.state.db.acquire() as connection:
         # SQL query to fetch all unique college names
         query = 'SELECT DISTINCT "School" FROM raw_data'
@@ -110,6 +152,18 @@ async def get_college_list():
 
 @app.post("/update-college-data/")
 async def update_college_data(data: List[dict] = Body(...)):
+    """
+    Update college data in the raw_data table.
+
+    Args:
+        data (List[dict]): A list of dictionaries containing updated college data.
+
+    Returns:
+        dict: A message indicating successful update.
+
+    Raises:
+        HTTPException: If there's an error during the update process.
+    """
     async with app.state.db.acquire() as connection:
         try:
             # Start a transaction
