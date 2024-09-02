@@ -35,14 +35,21 @@ if selected_college:
     df = pd.DataFrame(response.json())
 
     # Use the data editor to allow editing of the DataFrame
-    edited_df = st.data_editor(df, key='data_editor', on_change=lambda: save_to_local_storage('edited_df', st.session_state.data_editor))
+    edited_df = st.data_editor(df, key='data_editor')
 
     # Add a button to save changes
     if st.button('Save Changes'):
-        # Here you would add code to save the edited DataFrame back to your database
-        # For example:
-        # save_to_database(edited_df)
-        st.success('Changes saved successfully!')
+        # Convert the edited DataFrame to a list of dictionaries
+        data_to_update = edited_df.to_dict('records')
+        
+        # Make a POST request to the update-college-data endpoint
+        update_url = f"http://{host}:8000/update-college-data/"
+        update_response = requests.post(update_url, json=data_to_update)
+        
+        if update_response.status_code == 200:
+            st.success('Changes saved successfully!')
+        else:
+            st.error(f"Error saving changes: {update_response.text}")
 
 # You might want to add more functionality here, such as:
 # - Adding new colleges

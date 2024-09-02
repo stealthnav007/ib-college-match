@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 import asyncpg
 import pandas as pd
 from typing import List, Optional
@@ -107,4 +107,28 @@ async def get_college_list():
         colleges = [row['School'] for row in rows]
 
         return colleges
+
+@app.post("/update-college-data/")
+async def update_college_data(data: List[dict] = Body(...)):
+    async with app.state.db.acquire() as connection:
+        try:
+            # Start a transaction
+            async with connection.transaction():
+                for row in data:
+                    # Assuming 'id' is the primary key of the raw_data table
+                    query = """
+                    UPDATE raw_data 
+                    SET "School" = $1, "GPA" = $2, "SAT" = $3, "ACT" = $4, "Outcome" = $5
+                    WHERE id = $6
+                    """
+                    await connection.execute(query, 
+                                             row['School'], 
+                                             row['GPA'], 
+                                             row['SAT'], 
+                                             row['ACT'], 
+                                             row['Outcome'], 
+                                             row['id'])
+            return {"message": "Data updated successfully"}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
