@@ -24,10 +24,11 @@ response = requests.get(url)
 # Convert the response to a DataFrame
 df = pd.DataFrame(response.json())
 
-st.write("""
-# IB College Match
-UNIS Acceptance Data (2021 - 2023)
-""")
+# Add the subtitles
+st.markdown("""
+<h2 style='font-size: 32px; text-align: left;'>Find Colleges That Match Your Stats</h2>
+<p style='text-align: left;'>Your School Acceptance Data (2021 - 2023)</p>
+""", unsafe_allow_html=True)
 
 # Convert the 'Year', 'GPA', 'SAT' and 'ACT' columns to numeric
 df['Year'] = pd.to_numeric(df['Year'], errors='coerce')

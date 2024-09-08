@@ -7,19 +7,24 @@ from local_storage import save_to_local_storage, init_local_storage
 
 # Use the variable for setting the page configuration
 st.set_page_config(
-    page_title="Student Profile and Admissions Research Companion (SPARC)",
+    page_title="IB College Match",
     page_icon="favicon.ico",
 )
 
-# Store the page title in a variable
-page_title = "Student Profile and Admissions Research Companion (SPARC)"
+# Create two columns for the image and title
+col1, col2 = st.columns([1, 5])
 
-# Use the same variable to display the title as a heading
-st.markdown(f"# {page_title}")
+# Add the image to the first column
+with col1:
+    st.image("grad-diploma.png", width=100)  # Adjust the path and width as needed
 
-main_page = st.Page("pages/1_IB_College_Match.py", title="Find Colleges by GPA & SAT/ACT Scores")
-college_page = st.Page("pages/2_College_Specific_Data.py", title="Look Up College-Specific Data")
-data_maintenance = st.Page("pages/3_Data_Maintenance.py", title="Data Maintenance")
+# Add the title to the second column
+with col2:
+    st.markdown("<h1 style='font-size: 50px; margin-bottom: 0;'>IB College Match</h1>", unsafe_allow_html=True)
+
+main_page = st.Page("pages/1_IB_College_Match.py", title="Find Colleges That Match Your Stats")
+college_page = st.Page("pages/2_College_Specific_Data.py", title="Research Your Dream Schools")
+data_maintenance = st.Page("pages/3_Data_Maintenance.py", title="Advanced Data Maintenance")
 
 with open('./stauth.yml') as file:
     config = yaml.load(file, Loader=SafeLoader)

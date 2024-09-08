@@ -12,7 +12,10 @@ from session_state import init_session_state, get_preference, set_preference
 # Initialize session state
 init_session_state()
 
-st.title("College Specific Data")
+st.markdown("""
+<h2 style='font-size: 32px; text-align: left;'>Research Your Dream Schools</h2>
+<p style='text-align: left;'>Your School Acceptance Data (2021 - 2023)</p>
+""", unsafe_allow_html=True)
 
 # Make a GET request to the get-college-list endpoint
 host = os.getenv('FAST_API_HOST', 'localhost')
