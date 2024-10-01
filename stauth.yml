@@ -1,16 +1,16 @@
 credentials:
   usernames:
-    vmathew:
+    person1:
       email: stealthveeman5@gmail.com
       failed_login_attempts: 0 # Will be managed automatically
       logged_in: False # Will be managed automatically
-      name: Vinod Mathew
+      name: Person One
       password: "$2b$12$CU0BrRaK0YyN1GsZSV3v4e/O2et4KhsXU/VJBDOywgbx5dqFP68/S"
-    nmathew:
+    person2:
       email: stealthnav007@gmail.com
       failed_login_attempts: 0 # Will be managed automatically
       logged_in: False # Will be managed automatically
-      name: Naveen Mathew
+      name: Person Two
       password: "$2b$12$CU0BrRaK0YyN1GsZSV3v4e/O2et4KhsXU/VJBDOywgbx5dqFP68/S"
 cookie:
   expiry_days: 0
